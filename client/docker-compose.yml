@@ -1,0 +1,8 @@
+version: '3.3'
+services:
+    java-client:
+        image: 'openjdk:12'
+        container_name: java-client-container
+        volumes: 
+            - ./app:/root/project
+        command: bash -c "cd /root/project && javac Main.java && java Main"

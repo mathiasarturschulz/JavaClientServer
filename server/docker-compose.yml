@@ -1,0 +1,10 @@
+version: '3.3'
+services: 
+    java-server:
+        image: 'openjdk:12'
+        container_name: java-server-container
+        volumes: 
+            - ./app:/root/project
+        command: bash -c "cd /root/project && javac Main.java && java Main"
+        ports:
+            - '3333:3333'
