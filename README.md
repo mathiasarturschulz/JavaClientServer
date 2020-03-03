@@ -2,6 +2,8 @@
 
 Exemplo de aplicação cliente-servidor
 
+Obs: Sempre alterar o IP do servidor no cliente
+
 ### Executar o servidor
 
 Na pasta server, digite:
