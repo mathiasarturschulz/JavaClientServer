@@ -6,3 +6,7 @@ services:
         volumes: 
             - ./app:/root/project
         command: bash -c "cd /root/project && javac Main.java && java Main"
+        # stdin_open corresponds to -i in docker run and the tty to -t
+        stdin_open: true
+        tty: true
+        # docker-compose run --rm java-client
