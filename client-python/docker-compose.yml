@@ -1,0 +1,13 @@
+version: '3.3'
+services:
+    python-client:
+        image: 'python:3'
+        container_name: python-client-container
+        volumes: 
+            - ./app:/usr/src/app
+        command: bash -c "cd /usr/src/app && python main.py"
+        # stdin_open corresponds to -i in docker run and the tty to -t
+        stdin_open: true
+        tty: true
+        # docker-compose run --rm python-client
+        # CMD ["/bin/bash"]
