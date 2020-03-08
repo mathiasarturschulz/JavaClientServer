@@ -5,45 +5,64 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.HashMap;
 
 public class PaymentClient {
-	
-	public static void main(String[] args) {
+
+	HashMap<Integer, String> payments = new HashMap<Integer, String>();
+	Socket socketClient;
+
+	public static void main(String[] args) throws IOException {
 		new PaymentClient().startClient();
 	}
 
-	public void startClient() {
-		System.out.println("Trying to connect to the server...");
-		try (Socket socketClient = new Socket("localhost", 3333)) {
-			System.out.println("Connected on the server.");
+	public void startClient() throws IOException {
+		
 
-			BufferedReader in = new BufferedReader(new InputStreamReader(socketClient.getInputStream()));
-			PrintStream out = new PrintStream(socketClient.getOutputStream());
+		System.out.println("Tentando conectar ao servidor...");
+		socketClient = new Socket("localhost", 9000);
+		payments.put(0, "Teste;5376168351501945;589;07/07/2021;3;545");
+		payments.put(1, "Teste;5376168351501945;589;07/07/2021;3;545");
+		payments.put(2, "Teste;5376168351501945;589;07/07/2021;3;545");
+		payments.put(4, "Teste;5376168351501945;589;07/07/2021;3;545");
 
-			System.out.println("Requesting (REQ) payment service to the server...");
-			out.println("payment");
-			out.println("2");
-			out.println("JoseDaSilva;5376168351501945;589;07/07/2021;3;545");
-			out.println("MarcioDaSilva;5376168351501945;589;07/07/2021;3;545");
+		System.out.println("Conectado ao servidor.");
 
-			System.out.println("Server is processing your payments...");
+		BufferedReader in = new BufferedReader(new InputStreamReader(socketClient.getInputStream()));
+		PrintStream out = new PrintStream(socketClient.getOutputStream());
 
-			Integer paymentNumber = 0;
-			String paymentStatus = "";
+		System.out.println("REQ: Requisitando serviço de pagamento ao servidor...");
 
-			while (paymentNumber <= 2) {
-				paymentStatus = in.readLine();
-				paymentNumber = Integer.parseInt(in.readLine());
-				if (paymentStatus.equals("complete")) {
-					System.out.println("Your payment of number " + (paymentNumber+1) + " has been successfully processed.");
-				}
+		out.println("pagamento");
+		out.println(String.valueOf(payments.size()));
 
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		payments.keySet().forEach(i -> {
+			processPayment(i, out, in);
+		});
 
 	}
 
+	public void processPayment(Integer i, PrintStream out, BufferedReader in)  {
+
+		out.println(payments.get(i));
+
+		String paymentStatus = null;
+		
+		try {
+			paymentStatus = in.readLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		if (paymentStatus.equals("OK")) {
+			System.out.println("REQ: Seu pagamento foi processado com sucesso.");
+			System.out.println("ACK: Enviando confirmação ao servidor.");
+			out.println("ACK");
+			System.out.println("ACK: Confirmação enviada.");
+		} else {
+			System.out.println(paymentStatus);
+		}
+
+	}
 
 }

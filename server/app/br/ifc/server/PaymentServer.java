@@ -9,12 +9,13 @@ import java.net.Socket;
 
 public class PaymentServer {
 
-	private final Integer PORT = 3333;
+	private final Integer PORT = 9000;
 
 	public void startServer() {
 
 		try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-			System.out.println("-> Waiting for requests...");
+
+			System.out.println("-> Aguardando requisições...");
 			Socket socketClient = null;
 			while (true) {
 				socketClient = serverSocket.accept();
@@ -24,25 +25,32 @@ public class PaymentServer {
 
 				String op = inUser.readLine();
 
-				if (op.equalsIgnoreCase("payment")) {
+				if (op.equalsIgnoreCase("pagamento")) {
 					executePayment(inUser, outUser);
 				}
 			}
 
-		} catch (Exception e) {
+		} 
+		
+		catch (Exception e) {
 			System.err.println("Some error has occured. Error message -> " + e.getMessage());
 		}
 	}
 
 	public void executePayment(BufferedReader inUser, PrintStream outUser) {
+		
 		Integer numberOfPayments = 0;
 		try {
 			numberOfPayments = Integer.parseInt(inUser.readLine());
-			System.out.println("-> The number of payments is " + numberOfPayments + ".");
+			
+			if(numberOfPayments > 10) {
+				throw new Exception("Número de pagamentos é maior do que 10.");
+			}
+			
+			System.out.println("-> O número de pagamentos é " + numberOfPayments + ".");
 		} catch (Exception e) {
-			System.err.println("Some error has occured while trying to read the number of payments. Error message -> "
-					+ e.getMessage());
-			return;
+			outUser.println("TA: Tente novamente. O número de pagamentos é maior do que 10.");
+			System.exit(1);
 		}
 
 		for (int i = 0; i < numberOfPayments; i++) {
@@ -59,30 +67,36 @@ public class PaymentServer {
 				String clientPurchaseValue = clientData[5];
 
 				System.out.println("\n");
-				System.out.println(".: Payment Number (" + (i + 1) + "):");
-				System.out.println(".: Client Name: " + clientName);
-				System.out.println(".: Card Number: " + clientCardNumber);
-				System.out.println(".: Card Secure Code: " + clientCardSecureCode);
-				System.out.println(".: Card Valid Date: " + clientCardValidDate);
-				System.out.println(".: Installments: " + clientNumberInstallments);
-				System.out.println(".: Purchase value: " + clientPurchaseValue);
+				System.out.println(".: Número do pagamento (" + (i + 1) + "):");
+				System.out.println(".: Nome do cliente: " + clientName);
+				System.out.println(".: Número do cartão: " + clientCardNumber);
+				System.out.println(".: Código de segurança: " + clientCardSecureCode);
+				System.out.println(".: Validade do cartão: " + clientCardValidDate);
+				System.out.println(".: Parcelas: " + clientNumberInstallments);
+				System.out.println(".: Valor da compra: " + clientPurchaseValue);
 				System.out.println("\n");
 
-				System.out.println("-> Processing payment...");
-
-				Thread.sleep(5000);
-
-				System.out.println("-> Payment processed.");
-				Thread.sleep(500);
-				System.out.println("-> Sending confirmation (ACK) to the client...");
+				System.out.println("-> Processando pagamento...");
 				Thread.sleep(2000);
-				outUser.println("complete");
-				outUser.println(String.valueOf(i));
-				System.out.println("-> Confirmation (ACK) sent.");
+				System.out.println("-> Pagamento processado.");
+				Thread.sleep(500);
+				System.out.println("-> REP: Enviando resposta ao cliente...");
+				Thread.sleep(500);
+				
+				
+				outUser.println("OK");
+
+				System.out.println("-> REP: Resposta enviada.");
+				System.out.println("-> ACK: Aguardando confirmação...");
+				String confirmationStatus = inUser.readLine();
+				if(confirmationStatus.equals("ACK")) {
+					System.out.println("-> ACK: Confirmação do cliente recebida.");
+				}
+				
 				Thread.sleep(500);
 
-			} catch (IOException | InterruptedException e) {
-				e.printStackTrace();
+			} catch (Exception e) {
+				outUser.println("O pagamento falhou. Razão: " + e.getMessage());
 			}
 
 		}
