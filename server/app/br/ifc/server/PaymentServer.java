@@ -14,7 +14,7 @@ public class PaymentServer {
 	public void startServer() {
 
 		try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-			serverSocket.setSoTimeout(10000);
+			serverSocket.setSoTimeout(20000);
 			System.out.println("-> Aguardando requisições...");
 			Socket socketClient = null;
 			while (true) {

@@ -22,7 +22,8 @@ public class PaymentClient {
 		try {
 
 			System.out.println("Tentando conectar ao servidor...");
-			socketClient = new Socket("localhost", 9000);
+			// SEMPRE ALTERAR O IP PARA ENCONTRAR O CONTAINER DO SERVER
+			socketClient = new Socket("192.168.1.53", 3333);
 			socketClient.setSoTimeout(7000);
 			payments.put(0, "Teste;5376168351501945;589;07/07/2021;3;545");
 			payments.put(1, "Teste;5376168351501945;589;07/07/2021;3;545");
@@ -32,7 +33,7 @@ public class PaymentClient {
 			BufferedReader in = new BufferedReader(new InputStreamReader(socketClient.getInputStream()));
 			PrintStream out = new PrintStream(socketClient.getOutputStream());
 
-			System.out.println("REQ: Requisitando serviÁo de pagamento ao servidor...");
+			System.out.println("REQ: Requisitando servi√ßo de pagamento ao servidor...");
 
 			out.println("pagamento");
 			out.println(String.valueOf(payments.size()));
@@ -60,26 +61,22 @@ public class PaymentClient {
 
 	public void processPayment(Integer i, PrintStream out, BufferedReader in) throws IOException {
 		
-		
-		
-		System.out.println("AYA: Enviando requisiÁ„o AYA ao servidor.");
+		System.out.println("AYA: Enviando requisi√ß√£o AYA ao servidor.");
 		out.println("AYA");
 		String status = in.readLine();
 		if (status.equals("IAA")) {
-			System.out.println("IAA: Servidor est· vivo. Enviando dados do cliente.");
+			System.out.println("IAA: Servidor est√° vivo. Enviando dados do cliente.");
 			out.println(payments.get(i));
 		}
-	
 
 		String paymentStatus = null;
 		paymentStatus = in.readLine();
 
-
 		if (paymentStatus.equals("OK")) {
 			System.out.println("REP: Seu pagamento foi processado com sucesso.");
-			System.out.println("ACK: Enviando confirmaÁ„o ao servidor.");
+			System.out.println("ACK: Enviando confirma√ß√£o ao servidor.");
 			out.println("ACK");
-			System.out.println("ACK: ConfirmaÁ„o enviada.");
+			System.out.println("ACK: Confirma√ß√£o enviada.");
 		} else {
 			System.out.println(paymentStatus);
 		}

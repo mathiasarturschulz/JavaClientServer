@@ -5,7 +5,7 @@ services:
         container_name: java-client-container
         volumes: 
             - ./app:/root/project
-        command: bash -c "cd /root/project && javac Main.java && java Main"
+        command: bash -c "cd /root/project && javac br/ifc/client/PaymentClient.java && java br/ifc/client/PaymentClient"
         # stdin_open corresponds to -i in docker run and the tty to -t
         stdin_open: true
         tty: true
