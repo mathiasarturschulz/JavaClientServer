@@ -15,7 +15,7 @@ public class PaymentServer {
 
 		try (ServerSocket serverSocket = new ServerSocket(PORT)) {
 			serverSocket.setSoTimeout(10000);
-			System.out.println("-> Aguardando requisiÁıes...");
+			System.out.println("-> Aguardando requisi√ß√µes...");
 			Socket socketClient = null;
 			while (true) {
 				socketClient = serverSocket.accept();
@@ -31,7 +31,7 @@ public class PaymentServer {
 			}
 
 		} catch (SocketTimeoutException e) {
-			System.err.println("Cliente demorou muito para responder. Finalizando serviÁo.");
+			System.err.println("Cliente demorou muito para responder. Finalizando servi√ßo.");
 			System.exit(1);
 		} catch (Exception e) {
 			System.out.println("Algum erro ocorreu. " + e.getMessage());
@@ -45,12 +45,12 @@ public class PaymentServer {
 			numberOfPayments = Integer.parseInt(inUser.readLine());
 			
 			if(numberOfPayments > 10) {
-				throw new Exception("N˙mero de pagamentos È maior do que 10.");
+				throw new Exception("N√∫mero de pagamentos √© maior do que 10.");
 			}
 			
-			System.out.println("-> O n˙mero de pagamentos È " + numberOfPayments + ".");
+			System.out.println("-> O n√∫mero de pagamentos √© " + numberOfPayments + ".");
 		} catch (Exception e) {
-			outUser.println("TA: Tente novamente. O n˙mero de pagamentos È maior do que 10.");
+			outUser.println("TA: Tente novamente. O n√∫mero de pagamentos √© maior do que 10.");
 			System.exit(1);
 		}
 
@@ -59,7 +59,6 @@ public class PaymentServer {
 			try {
 				
 				Thread.sleep(5000);
-				
 				
 				String status = inUser.readLine();
 				if(status.equals("AYA")) {
@@ -79,11 +78,11 @@ public class PaymentServer {
 				String clientPurchaseValue = clientData[5];
 
 				System.out.println("\n");
-				System.out.println(".: N˙mero do pagamento (" + (i + 1) + "):");
+				System.out.println(".: N√∫mero do pagamento (" + (i + 1) + "):");
 				System.out.println(".: Nome do cliente: " + clientName);
-				System.out.println(".: N˙mero do cart„o: " + clientCardNumber);
-				System.out.println(".: CÛdigo de seguranÁa: " + clientCardSecureCode);
-				System.out.println(".: Validade do cart„o: " + clientCardValidDate);
+				System.out.println(".: N√∫mero do cart√£o: " + clientCardNumber);
+				System.out.println(".: C√≥digo de seguran√ßa: " + clientCardSecureCode);
+				System.out.println(".: Validade do cart√£o: " + clientCardValidDate);
 				System.out.println(".: Parcelas: " + clientNumberInstallments);
 				System.out.println(".: Valor da compra: " + clientPurchaseValue);
 				System.out.println("\n");
@@ -98,14 +97,14 @@ public class PaymentServer {
 				outUser.println("OK");
 
 				System.out.println("-> REP: Resposta enviada.");
-				System.out.println("-> ACK: Aguardando confirmaÁ„o...");
+				System.out.println("-> ACK: Aguardando confirma√ß√£o...");
 				String confirmationStatus = inUser.readLine();
 				if(confirmationStatus.equals("ACK")) {
-					System.out.println("-> ACK: ConfirmaÁ„o do cliente recebida.");
+					System.out.println("-> ACK: Confirma√ß√£o do cliente recebida.");
 				}
 				
 			}  catch (Exception e) {
-				outUser.println("O pagamento falhou. Raz„o: " + e.getMessage());
+				outUser.println("O pagamento falhou. Raz√£o: " + e.getMessage());
 			}
 
 		}
