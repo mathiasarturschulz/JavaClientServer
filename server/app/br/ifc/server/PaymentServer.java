@@ -1,11 +1,11 @@
 package br.ifc.server;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 
 public class PaymentServer {
 
@@ -14,7 +14,7 @@ public class PaymentServer {
 	public void startServer() {
 
 		try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-
+			serverSocket.setSoTimeout(10000);
 			System.out.println("-> Aguardando requisições...");
 			Socket socketClient = null;
 			while (true) {
@@ -30,13 +30,14 @@ public class PaymentServer {
 				}
 			}
 
-		} 
-		
-		catch (Exception e) {
-			System.err.println("Some error has occured. Error message -> " + e.getMessage());
+		} catch (SocketTimeoutException e) {
+			System.err.println("Cliente demorou muito para responder. Finalizando serviço.");
+			System.exit(1);
+		} catch (Exception e) {
+			System.out.println("Algum erro ocorreu. " + e.getMessage());
 		}
 	}
-
+	
 	public void executePayment(BufferedReader inUser, PrintStream outUser) {
 		
 		Integer numberOfPayments = 0;
@@ -54,10 +55,21 @@ public class PaymentServer {
 		}
 
 		for (int i = 0; i < numberOfPayments; i++) {
-
+			
 			try {
-
+				
+				Thread.sleep(5000);
+				
+				
+				String status = inUser.readLine();
+				if(status.equals("AYA")) {
+					System.out.println("AYA: Mensagem AYA recebida.");
+					System.out.println("IAA: Enviando mensagem IAA.");	
+					outUser.println("IAA");
+				}
+				
 				String clientData[] = inUser.readLine().split(";");
+
 				String clientName = clientData[0];
 
 				String clientCardNumber = clientData[1];
@@ -82,8 +94,7 @@ public class PaymentServer {
 				Thread.sleep(500);
 				System.out.println("-> REP: Enviando resposta ao cliente...");
 				Thread.sleep(500);
-				
-				
+
 				outUser.println("OK");
 
 				System.out.println("-> REP: Resposta enviada.");
@@ -93,9 +104,7 @@ public class PaymentServer {
 					System.out.println("-> ACK: Confirmação do cliente recebida.");
 				}
 				
-				Thread.sleep(500);
-
-			} catch (Exception e) {
+			}  catch (Exception e) {
 				outUser.println("O pagamento falhou. Razão: " + e.getMessage());
 			}
 

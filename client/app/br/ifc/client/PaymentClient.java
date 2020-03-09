@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.HashMap;
 
 public class PaymentClient {
@@ -17,45 +18,65 @@ public class PaymentClient {
 	}
 
 	public void startClient() throws IOException {
-		
 
-		System.out.println("Tentando conectar ao servidor...");
-		socketClient = new Socket("localhost", 9000);
-		payments.put(0, "Teste;5376168351501945;589;07/07/2021;3;545");
-		payments.put(1, "Teste;5376168351501945;589;07/07/2021;3;545");
-		payments.put(2, "Teste;5376168351501945;589;07/07/2021;3;545");
-		payments.put(4, "Teste;5376168351501945;589;07/07/2021;3;545");
+		try {
 
-		System.out.println("Conectado ao servidor.");
+			System.out.println("Tentando conectar ao servidor...");
+			socketClient = new Socket("localhost", 9000);
+			socketClient.setSoTimeout(7000);
+			payments.put(0, "Teste;5376168351501945;589;07/07/2021;3;545");
+			payments.put(1, "Teste;5376168351501945;589;07/07/2021;3;545");
 
-		BufferedReader in = new BufferedReader(new InputStreamReader(socketClient.getInputStream()));
-		PrintStream out = new PrintStream(socketClient.getOutputStream());
+			System.out.println("Conectado ao servidor.");
 
-		System.out.println("REQ: Requisitando serviço de pagamento ao servidor...");
+			BufferedReader in = new BufferedReader(new InputStreamReader(socketClient.getInputStream()));
+			PrintStream out = new PrintStream(socketClient.getOutputStream());
 
-		out.println("pagamento");
-		out.println(String.valueOf(payments.size()));
+			System.out.println("REQ: Requisitando serviço de pagamento ao servidor...");
 
-		payments.keySet().forEach(i -> {
-			processPayment(i, out, in);
-		});
+			out.println("pagamento");
+			out.println(String.valueOf(payments.size()));
+
+			payments.keySet().forEach(i -> {
+				try {
+					processPayment(i, out, in);
+				} catch (SocketTimeoutException e2) {
+					
+					System.out.println("TA: Servidor parece ocupado. Tente novamente mais tarde.");
+					System.exit(1);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			});
+
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		} finally {
+			socketClient.close();
+			System.out.println("-> Finalizando socket do cliente.");
+		}
 
 	}
 
-	public void processPayment(Integer i, PrintStream out, BufferedReader in)  {
-
-		out.println(payments.get(i));
+	public void processPayment(Integer i, PrintStream out, BufferedReader in) throws IOException {
+		
+		
+		
+		System.out.println("AYA: Enviando requisição AYA ao servidor.");
+		out.println("AYA");
+		String status = in.readLine();
+		if (status.equals("IAA")) {
+			System.out.println("IAA: Servidor está vivo. Enviando dados do cliente.");
+			out.println(payments.get(i));
+		}
+	
 
 		String paymentStatus = null;
-		
-		try {
-			paymentStatus = in.readLine();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
+		paymentStatus = in.readLine();
+
+
 		if (paymentStatus.equals("OK")) {
-			System.out.println("REQ: Seu pagamento foi processado com sucesso.");
+			System.out.println("REP: Seu pagamento foi processado com sucesso.");
 			System.out.println("ACK: Enviando confirmação ao servidor.");
 			out.println("ACK");
 			System.out.println("ACK: Confirmação enviada.");
