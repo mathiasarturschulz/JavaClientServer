@@ -9,7 +9,7 @@ import java.net.SocketTimeoutException;
 
 public class PaymentServer {
 
-	private final Integer PORT = 9000;
+	private final Integer PORT = 3333;
 
 	public void startServer() {
 
