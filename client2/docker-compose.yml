@@ -1,0 +1,12 @@
+version: '3.3'
+services:
+    java-client:
+        image: 'openjdk:12'
+        container_name: java-client2-container
+        volumes: 
+            - ./app:/root/project
+        command: bash -c "cd /root/project && javac br/ifc/client/PaymentClient.java && java br/ifc/client/PaymentClient"
+        # stdin_open corresponds to -i in docker run and the tty to -t
+        stdin_open: true
+        tty: true
+        # docker-compose run --rm java-client
