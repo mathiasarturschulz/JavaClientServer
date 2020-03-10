@@ -23,7 +23,7 @@ public class PaymentClient {
 
 			System.out.println("Tentando conectar ao servidor...");
 			// SEMPRE ALTERAR O IP PARA ENCONTRAR O CONTAINER DO SERVER
-			socketClient = new Socket("192.168.1.53", 3333);
+			socketClient = new Socket("172.16.0.213", 3333);
 			socketClient.setSoTimeout(7000);
 			payments.put(0, "Teste;5376168351501945;589;07/07/2021;3;545");
 			payments.put(1, "Teste;5376168351501945;589;07/07/2021;3;545");
